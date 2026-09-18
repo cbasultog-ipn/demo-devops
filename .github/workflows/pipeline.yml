@@ -1,0 +1,81 @@
+name: Pipeline de demostración
+
+# Se ejecuta cada vez que se guarda un cambio en la rama main,
+# y también manualmente desde la pestaña Actions.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Evita que dos publicaciones se pisen entre sí.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  # ETAPA 1: revisar que el cambio no rompa nada (Integración Continua)
+  validar:
+    name: 1 - Validar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Comprobar que existe index.html
+        run: |
+          test -f index.html || { echo "::error::No se encontró el archivo index.html"; exit 1; }
+
+      - name: Comprobar que el título principal dice "Hola DevOps"
+        run: |
+          grep -q '<h1>Hola DevOps</h1>' index.html || { echo "::error::El título principal (h1) debe decir exactamente: Hola DevOps"; exit 1; }
+
+      - name: Comprobar que la página está completa
+        run: |
+          grep -q '</html>' index.html || { echo "::error::A la página le falta la etiqueta de cierre </html>"; exit 1; }
+
+  # ETAPA 2: preparar lo que se va a publicar
+  construir:
+    name: 2 - Construir
+    needs: validar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Preparar la carpeta de publicación
+        run: |
+          mkdir _site
+          cp index.html _site/
+
+      - name: Agregar commit y fecha a la página
+        run: |
+          COMMIT="${GITHUB_SHA::7}"
+          FECHA="$(TZ='America/Mexico_City' date '+%d-%m-%Y %H:%M:%S')"
+          sed -i "s|__COMMIT__|${COMMIT}|g" _site/index.html
+          sed -i "s|__FECHA__|${FECHA} (hora de Ciudad de México)|g" _site/index.html
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Empaquetar el sitio
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  # ETAPA 3: publicar el sitio (Entrega/Despliegue Continuo)
+  desplegar:
+    name: 3 - Desplegar
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - name: Publicar en GitHub Pages
+        id: despliegue
+        uses: actions/deploy-pages@v4
