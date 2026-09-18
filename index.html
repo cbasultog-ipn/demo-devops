@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hola DevOps</title>
+  <style>
+    :root {
+      --papel: #edf0f3;
+      --tinta: #13202d;
+      --apagado: #55636f;
+      --linea: #c9d1d8;
+      --ok: #1e8e4e;
+      --blanco: #ffffff;
+      --sans: "Avenir Next", "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--papel);
+      color: var(--tinta);
+      font-family: var(--sans);
+      line-height: 1.55;
+    }
+
+    main {
+      max-width: 62rem;
+      margin: 0 auto;
+      padding: clamp(2rem, 6vw, 5rem) clamp(1.25rem, 5vw, 3rem) 3rem;
+    }
+
+    h1 {
+      margin: 0 0 1rem;
+      font-size: clamp(3.25rem, 13vw, 8.5rem);
+      line-height: 0.95;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .intro {
+      max-width: 36rem;
+      margin: 0 0 clamp(2.5rem, 7vw, 4.5rem);
+      font-size: clamp(1.1rem, 2.4vw, 1.35rem);
+      color: var(--apagado);
+    }
+
+    h2 {
+      margin: 0 0 0.25rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    /* Recorrido del pipeline: las tres etapas son una secuencia real */
+    .etapas {
+      list-style: none;
+      margin: 0 0 clamp(2.5rem, 7vw, 4.5rem);
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0 1.5rem;
+    }
+
+    .etapa {
+      position: relative;
+      padding-top: 4rem;
+    }
+
+    .etapa p {
+      margin: 0;
+      max-width: 17rem;
+      color: var(--apagado);
+      font-size: 0.975rem;
+    }
+
+    .nodo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--ok);
+      color: var(--blanco);
+      display: grid;
+      place-items: center;
+    }
+
+    .etapa:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 21px;
+      left: 52px;
+      width: calc(100% - 36px);
+      height: 2px;
+      background: var(--ok);
+    }
+
+    .sr {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    /* Bloque que el presentador edita durante la demo */
+    .mensaje {
+      margin: 0 0 clamp(2.5rem, 7vw, 4.5rem);
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--linea);
+    }
+
+    .mensaje p {
+      margin: 0;
+      max-width: 40rem;
+      font-size: clamp(1.4rem, 3.4vw, 2rem);
+      line-height: 1.25;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    /* Huella que agrega el pipeline en la etapa Construir */
+    .huella {
+      margin: 0 0 2rem;
+      padding: 1.5rem 1.75rem;
+      background: var(--tinta);
+      color: var(--blanco);
+      border-radius: 6px;
+    }
+
+    .huella h2 { margin-bottom: 1rem; }
+
+    .huella dl {
+      margin: 0;
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 0.5rem 1.5rem;
+    }
+
+    .huella dt { color: #a9b6c2; }
+    .huella dd { margin: 0; font-family: var(--mono); font-size: 1.05rem; }
+
+    footer { color: var(--apagado); font-size: 0.95rem; }
+
+    a { color: var(--tinta); text-underline-offset: 3px; }
+    a:focus-visible { outline: 3px solid var(--ok); outline-offset: 3px; }
+
+    @media (max-width: 40rem) {
+      .etapas { grid-template-columns: 1fr; }
+      .etapa { padding: 0 0 2rem 4rem; min-height: 44px; }
+      .etapa:last-child { padding-bottom: 0; }
+      .etapa:not(:last-child)::after {
+        top: 52px;
+        left: 21px;
+        width: 2px;
+        height: calc(100% - 60px);
+      }
+      .huella dl { grid-template-columns: 1fr; gap: 0.15rem; }
+      .huella dd { margin-bottom: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Hola DevOps</h1>
+    <p class="intro">
+      Esta página se validó, se construyó y se publicó sola en cuanto alguien guardó un cambio en el repositorio.
+    </p>
+
+    <ol class="etapas">
+      <li class="etapa">
+        <span class="nodo">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h2><span class="sr">Etapa completada: </span>Validar</h2>
+        <p>Revisa que la página tenga lo mínimo necesario. Si algo falla, el proceso se detiene aquí.</p>
+      </li>
+      <li class="etapa">
+        <span class="nodo">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h2><span class="sr">Etapa completada: </span>Construir</h2>
+        <p>Prepara los archivos y les agrega el commit y la fecha de esta publicación.</p>
+      </li>
+      <li class="etapa">
+        <span class="nodo">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <h2><span class="sr">Etapa completada: </span>Desplegar</h2>
+        <p>Publica el resultado en GitHub Pages para que cualquiera pueda abrirlo.</p>
+      </li>
+    </ol>
+
+    <section class="mensaje">
+      <h2>Qué trae esta versión</h2>
+      <!-- DEMO: edita la frase de abajo y guarda el cambio (commit) -->
+      <p id="mensaje">Versión 1: primera publicación con el pipeline.</p>
+    </section>
+
+    <section class="huella">
+      <h2>Huella de esta publicación</h2>
+      <dl>
+        <dt>Commit</dt>
+        <dd>__COMMIT__</dd>
+        <dt>Publicada el</dt>
+        <dd>__FECHA__</dd>
+      </dl>
+    </section>
+
+    <footer>
+      Código y pipeline en
+      <a href="https://github.com/cbasultog-ipn/demo-devops">github.com/cbasultog-ipn/demo-devops</a>.
+    </footer>
+  </main>
+</body>
+</html>
